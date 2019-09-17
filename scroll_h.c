@@ -17,7 +17,6 @@
 #pragma bss-name(push, "ZEROPAGE")
 
 // GLOBAL VARIABLES
-unsigned char sprid; // remember the index into the sprite buffer
 unsigned char pad1;
 unsigned int scroll_x;
 unsigned int scroll_y;
@@ -104,26 +103,23 @@ void main (void) {
 void draw_sprites(void){
 	// clear all sprites from sprite buffer
 	oam_clear();
-
-	// reset index into the sprite buffer
-	sprid = 0;
 	
 	// draw 1 metasprite
-	sprid = oam_meta_spr(sprite_x, sprite_y, sprid, YellowSpr);
+	oam_meta_spr(sprite_x, sprite_y, YellowSpr);
 	
 	// draw the x and y as sprites
-	sprid =  oam_spr(20,20,0xfe,1,sprid); // 0xfe = X
+	oam_spr(20,20,0xfe,1); // 0xfe = X
 	temp1 = (scroll_x & 0xff) >> 4;
-	// oam_spr(unsigned char x,unsigned char y,unsigned char chrnum,unsigned char attr,unsigned char sprid);
-	sprid =  oam_spr(28,20,temp1,1,sprid);
+	// oam_spr(unsigned char x,unsigned char y,unsigned char chrnum,unsigned char attr);
+	oam_spr(28,20,temp1,1);
 	temp1 = (scroll_x & 0x0f);
-	sprid =  oam_spr(36,20,temp1,1,sprid);
+	oam_spr(36,20,temp1,1);
 	
-	sprid =  oam_spr(50,20,0xff,1,sprid); // 0xff = Y
+	oam_spr(50,20,0xff,1); // 0xff = Y
 	temp1 = (scroll_y & 0xff) >> 4;
-	sprid =  oam_spr(58,20,temp1,1,sprid);
+	oam_spr(58,20,temp1,1);
 	temp1 = (scroll_y & 0x0f);
-	sprid =  oam_spr(66,20,temp1,1,sprid);
+	oam_spr(66,20,temp1,1);
 }
 	
 	

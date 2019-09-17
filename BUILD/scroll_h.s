@@ -31,7 +31,6 @@
 	.export		_BlueSpr
 	.export		_N0
 	.export		_N1
-	.export		_sprid
 	.export		_pad1
 	.export		_scroll_x
 	.export		_scroll_y
@@ -575,8 +574,6 @@ _palette_sp:
 .segment	"BSS"
 
 .segment	"ZEROPAGE"
-_sprid:
-	.res	1,$00
 _pad1:
 	.res	1,$00
 _scroll_x:
@@ -602,45 +599,32 @@ _temp1:
 ;
 	jsr     _oam_clear
 ;
-; sprid = 0;
+; oam_meta_spr(sprite_x, sprite_y, YellowSpr);
 ;
-	lda     #$00
-	sta     _sprid
-;
-; sprid = oam_meta_spr(sprite_x, sprite_y, sprid, YellowSpr);
-;
-	jsr     decsp3
+	jsr     decsp2
 	lda     _sprite_x
-	ldy     #$02
+	ldy     #$01
 	sta     (sp),y
 	lda     _sprite_y
-	dey
-	sta     (sp),y
-	lda     _sprid
 	dey
 	sta     (sp),y
 	lda     #<(_YellowSpr)
 	ldx     #>(_YellowSpr)
 	jsr     _oam_meta_spr
-	sta     _sprid
 ;
-; sprid =  oam_spr(20,20,0xfe,1,sprid); // 0xfe = X
+; oam_spr(20,20,0xfe,1); // 0xfe = X
 ;
-	jsr     decsp4
+	jsr     decsp3
 	lda     #$14
-	ldy     #$03
+	ldy     #$02
 	sta     (sp),y
 	dey
 	sta     (sp),y
 	lda     #$FE
 	dey
 	sta     (sp),y
-	tya
-	dey
-	sta     (sp),y
-	lda     _sprid
+	lda     #$01
 	jsr     _oam_spr
-	sta     _sprid
 ;
 ; temp1 = (scroll_x & 0xff) >> 4;
 ;
@@ -651,11 +635,11 @@ _temp1:
 	lsr     a
 	sta     _temp1
 ;
-; sprid =  oam_spr(28,20,temp1,1,sprid);
+; oam_spr(28,20,temp1,1);
 ;
-	jsr     decsp4
+	jsr     decsp3
 	lda     #$1C
-	ldy     #$03
+	ldy     #$02
 	sta     (sp),y
 	lda     #$14
 	dey
@@ -663,12 +647,8 @@ _temp1:
 	lda     _temp1
 	dey
 	sta     (sp),y
-	tya
-	dey
-	sta     (sp),y
-	lda     _sprid
+	lda     #$01
 	jsr     _oam_spr
-	sta     _sprid
 ;
 ; temp1 = (scroll_x & 0x0f);
 ;
@@ -676,11 +656,11 @@ _temp1:
 	and     #$0F
 	sta     _temp1
 ;
-; sprid =  oam_spr(36,20,temp1,1,sprid);
+; oam_spr(36,20,temp1,1);
 ;
-	jsr     decsp4
+	jsr     decsp3
 	lda     #$24
-	ldy     #$03
+	ldy     #$02
 	sta     (sp),y
 	lda     #$14
 	dey
@@ -688,18 +668,14 @@ _temp1:
 	lda     _temp1
 	dey
 	sta     (sp),y
-	tya
-	dey
-	sta     (sp),y
-	lda     _sprid
+	lda     #$01
 	jsr     _oam_spr
-	sta     _sprid
 ;
-; sprid =  oam_spr(50,20,0xff,1,sprid); // 0xff = Y
+; oam_spr(50,20,0xff,1); // 0xff = Y
 ;
-	jsr     decsp4
+	jsr     decsp3
 	lda     #$32
-	ldy     #$03
+	ldy     #$02
 	sta     (sp),y
 	lda     #$14
 	dey
@@ -707,12 +683,8 @@ _temp1:
 	lda     #$FF
 	dey
 	sta     (sp),y
-	tya
-	dey
-	sta     (sp),y
-	lda     _sprid
+	lda     #$01
 	jsr     _oam_spr
-	sta     _sprid
 ;
 ; temp1 = (scroll_y & 0xff) >> 4;
 ;
@@ -723,11 +695,11 @@ _temp1:
 	lsr     a
 	sta     _temp1
 ;
-; sprid =  oam_spr(58,20,temp1,1,sprid);
+; oam_spr(58,20,temp1,1);
 ;
-	jsr     decsp4
+	jsr     decsp3
 	lda     #$3A
-	ldy     #$03
+	ldy     #$02
 	sta     (sp),y
 	lda     #$14
 	dey
@@ -735,12 +707,8 @@ _temp1:
 	lda     _temp1
 	dey
 	sta     (sp),y
-	tya
-	dey
-	sta     (sp),y
-	lda     _sprid
+	lda     #$01
 	jsr     _oam_spr
-	sta     _sprid
 ;
 ; temp1 = (scroll_y & 0x0f);
 ;
@@ -748,11 +716,11 @@ _temp1:
 	and     #$0F
 	sta     _temp1
 ;
-; sprid =  oam_spr(66,20,temp1,1,sprid);
+; oam_spr(66,20,temp1,1);
 ;
-	jsr     decsp4
+	jsr     decsp3
 	lda     #$42
-	ldy     #$03
+	ldy     #$02
 	sta     (sp),y
 	lda     #$14
 	dey
@@ -760,16 +728,8 @@ _temp1:
 	lda     _temp1
 	dey
 	sta     (sp),y
-	tya
-	dey
-	sta     (sp),y
-	lda     _sprid
-	jsr     _oam_spr
-	sta     _sprid
-;
-; }
-;
-	rts
+	lda     #$01
+	jmp     _oam_spr
 
 .endproc
 
@@ -788,7 +748,7 @@ _temp1:
 ;
 	lda     _pad1
 	and     #$02
-	beq     L0281
+	beq     L0271
 ;
 ; scroll_x -= 1;
 ;
@@ -796,27 +756,27 @@ _temp1:
 	sec
 	sbc     #$01
 	sta     _scroll_x
-	bcs     L0282
+	bcs     L0272
 	dec     _scroll_x+1
 ;
 ; else if (pad1 & PAD_RIGHT){
 ;
-	jmp     L0282
-L0281:	lda     _pad1
+	jmp     L0272
+L0271:	lda     _pad1
 	and     #$01
-	beq     L0282
+	beq     L0272
 ;
 ; scroll_x += 1;
 ;
 	inc     _scroll_x
-	bne     L0282
+	bne     L0272
 	inc     _scroll_x+1
 ;
 ; if(pad1 & PAD_UP){
 ;
-L0282:	lda     _pad1
+L0272:	lda     _pad1
 	and     #$08
-	beq     L0283
+	beq     L0273
 ;
 ; scroll_y = sub_scroll_y(1, scroll_y);
 ;
@@ -828,10 +788,10 @@ L0282:	lda     _pad1
 ;
 ; else if (pad1 & PAD_DOWN){
 ;
-	jmp     L0284
-L0283:	lda     _pad1
+	jmp     L0274
+L0273:	lda     _pad1
 	and     #$04
-	beq     L0275
+	beq     L0265
 ;
 ; scroll_y = add_scroll_y(1, scroll_y);
 ;
@@ -840,12 +800,12 @@ L0283:	lda     _pad1
 	lda     _scroll_y
 	ldx     _scroll_y+1
 	jsr     _add_scroll_y
-L0284:	sta     _scroll_y
+L0274:	sta     _scroll_y
 	stx     _scroll_y+1
 ;
 ; set_scroll_x(scroll_x);
 ;
-L0275:	lda     _scroll_x
+L0265:	lda     _scroll_x
 	ldx     _scroll_x+1
 	jsr     _set_scroll_x
 ;
